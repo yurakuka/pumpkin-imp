@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.tools/
+publication/
+.DS_Store
+.env
+.env.*
+!.env.example
+.codex/
+.agents/
+.aws/
+/Pumpkin Imp Character Concept Sheet.png
+/game-release.zip
+/pnpm-lock.yaml
+/pnpm-workspace.yaml
+.pnpm-store/
+.npm/

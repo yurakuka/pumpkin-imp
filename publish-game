@@ -1,0 +1,13 @@
+#!/bin/sh
+set -eu
+PUMPKIN_PROJECT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+if command -v node >/dev/null 2>&1; then
+  PUMPKIN_NODE=$(command -v node)
+else
+  PUMPKIN_NODE="$HOME/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node"
+fi
+if [ ! -x "$PUMPKIN_NODE" ]; then
+  echo 'Install Node.js 22 LTS, then try again.' >&2
+  exit 1
+fi
+exec "$PUMPKIN_NODE" "$PUMPKIN_PROJECT_DIR/scripts/publish.mjs" "$@"

@@ -1,4 +1,4 @@
-name: Publish Pumpkin Imp
+name: Build and publish Pumpkin Imp
 on:
   push:
     branches: [main]
@@ -18,11 +18,15 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - name: Extract tested game build
-        run: unzip -q game-release.zip -d release
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: release/public
+          path: dist
       - uses: actions/deploy-pages@v4
         id: deployment

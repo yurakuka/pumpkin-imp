@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#101021">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/src/style.css">
+  <style>
+    [hidden]{display:none!important}
+    #startup{position:fixed;inset:0;z-index:1000;background:#101426;color:#f4e5c5;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;font:16px monospace;line-height:1.6}
+    #startup h1{font-size:26px;color:#ffbc61}#startup button{padding:14px 24px;color:#fff0cc;background:#34354d;border:2px solid #797089;border-radius:8px;font:16px monospace;cursor:pointer}
+    #touch-controls,#rotate-hint{display:none}
+  </style>
+  <title>Pumpkin Imp: The Last Halloween</title>
+</head>
+<body>
+  <section id="startup" role="status"><h1>PUMPKIN IMP</h1><p id="startup-message">Lighting the Halloween lantern…</p><button id="retry-load" hidden>TRY AGAIN</button></section>
+  <noscript>This game needs JavaScript. Enable it in your browser and reload.</noscript>
+  <div id="game"></div>
+  <nav id="touch-controls" aria-label="Game controls">
+    <div class="control-group">
+      <button data-control="left" aria-label="Move left">◀</button>
+      <button data-control="right" aria-label="Move right">▶</button>
+    </div>
+    <div class="control-group utilities">
+      <button data-control="pause">PAUSE</button>
+      <button data-control="mute">SOUND</button>
+    </div>
+    <div class="control-group actions">
+      <button data-control="scare">SCARE</button>
+      <button data-control="fire">FIRE</button>
+      <button data-control="jump" class="jump">JUMP</button>
+    </div>
+    <button id="comic-continue" hidden>TAP TO CONTINUE</button>
+  </nav>
+  <nav id="screen-actions" aria-label="Screen actions" hidden></nav>
+  <div id="rotate-hint"><span>↻</span><strong>Turn your phone sideways</strong><p>Pumpkin Imp plays best in landscape.<br>Your adventure will wait.</p></div>
+  <script>
+    (() => {
+      let ready = false;
+      const panel = document.getElementById('startup');
+      const retry = document.getElementById('retry-load');
+      const fail = () => {
+        if (ready) return;
+        document.getElementById('startup-message').textContent = 'The game could not finish loading. Check your connection and try again.';
+        retry.hidden = false;
+      };
+      const timeout = setTimeout(fail, 20000);
+      document.addEventListener('game-ready', () => { ready = true; clearTimeout(timeout); panel.hidden = true; }, { once: true });
+      window.addEventListener('error', fail, true);
+      window.addEventListener('unhandledrejection', fail);
+      retry.addEventListener('click', () => location.reload());
+    })();
+  </script>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
