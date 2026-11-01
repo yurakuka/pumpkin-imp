@@ -7,6 +7,7 @@ export class Credits extends Phaser.Scene {
   constructor() { super('Credits'); }
   init(result) { this.result = result; }
   create() {
+    sound.setMode('credits');
     backdrop(this);
     text(this, 480, 43, 'HALLOWEEN IS SAVED!', 34, '#ffcf77');
     text(this, 480, 80, 'The lantern is home. And so are your friends.', 17, '#d6b4dc');
@@ -40,7 +41,7 @@ export class Credits extends Phaser.Scene {
         this.tweens.add({ targets: roll, alpha: 1, duration: 350 });
       } });
     } });
-    text(this, 480, 449, `Friends ${this.result.rescued}/2  •  Candy ${this.result.candy}  •  ${this.result.time}s before dawn`, 15, '#d4c8bc');
+    text(this, 480, 433, `Friends ${this.result.rescued}/2  •  Candy ${this.result.candy}  •  ${this.result.time}s before dawn`, 15, '#d4c8bc');
     screenActions.show(this,[{id:'retry',label:'PLAY AGAIN',run:()=>this.scene.start('Graveyard')},{id:'title',label:'TITLE SCREEN',run:()=>this.scene.start('Menu')}]);
     sound.tone(523, .3, 'triangle', .035);
     this.time.delayedCall(180, () => sound.tone(784, .45, 'triangle', .035));

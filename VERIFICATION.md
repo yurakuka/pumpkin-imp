@@ -145,3 +145,8 @@ Passed in Chromium touch emulation:
 These are controlled gameplay tests, not a complete uninterrupted human run. Physical iPhone Safari remains untested.
 
 Final production check on desktop Chromium: reached a real game-over through normal movement, clicked native TRY AGAIN, then paused and clicked native RESUME. Both actions worked; the game returned to play with no JavaScript errors. The production bundle has no development game hook. Final production build passed and the stable desktop/Wi-Fi server was restarted with it.
+
+
+## v1.1.0
+
+Automated Chrome mobile viewport (844×390, DPR 2): canvas fills 844×389.86 with virtual width 1169, and touch controls overlay it. Verified five starting hearts; all four on-screen foes frightened while distant foes remain unaffected; rescue comic Continue joins the duck as an invulnerable follower; both followers have no physics bodies; boss music mode, eight-hit defeat, door sequence, credits music, and Play Again resetting to five hearts. No browser page errors in this flow. Test jumped to encounter locations; a full uninterrupted run and physical iPhone/Safari audio/fullscreen behavior remain untested.

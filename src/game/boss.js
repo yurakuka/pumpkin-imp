@@ -48,6 +48,7 @@ export class BoneRex {
       const x = this.sprite.x, y = this.sprite.y;
       this.defeated = true;
       this.sprite.destroy();
+      sound.setMode('adventure');
       this.panel.setVisible(false);
       for (let i = 0; i < 3; i++) s.puff(x + (i - 1) * 35, y - i * 15, 0xf0dfb9);
       s.lantern.clearTint().setAlpha(1);
@@ -68,6 +69,7 @@ export class BoneRex {
     this.panel.setVisible(true);
     if (!this.introduced) {
       this.introduced = true;
+      sound.setMode('boss');
       s.toast('BONE REX • Eight hits! Fireballs or head stomps.');
     }
     if (b.x < 25920) this.direction = 1;

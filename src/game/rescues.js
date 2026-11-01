@@ -27,7 +27,8 @@ export class Rescues {
     });
   }
 
-  update() {
+  update(delta = 16) {
+    this.follow(delta);
     const s = this.scene;
     for (const entry of this.entries) {
       if (entry.saved || Math.abs(s.player.x - entry.x) > 490) continue;
@@ -38,14 +39,41 @@ export class Rescues {
       }
       entry.saved = true;
       this.completed++;
-      entry.label.setText('SAFE!').setColor('#bce6ad');
+      entry.label.setVisible(false);
       for (const guard of entry.guards) if (guard.active) {
         guard.banished = true;
         s.time.delayedCall(900, () => { if (guard.active) guard.destroy(); });
       }
-      s.hp = 3;
+      s.hp = 5;
       this.showComic(entry);
       break;
+    }
+  }
+
+  follow(delta) {
+    const s=this.scene;
+    if(s.inComic||s.escaping||s.dead)return;
+    const view=s.cameras.main.worldView;
+    for(const [index,entry] of this.entries.entries()){
+      if(!entry.following)continue;
+      const npc=entry.npc;
+      // Companions are visual actors: no collision or damage bodies.
+      const target=Math.max(40,Math.min(s.player.x-85-index*58,view.left+145+index*62));
+      const danger=s.enemies.getChildren().some(e=>e.active&&!e.banished&&s.time.now>=e.fear&&Math.abs(e.x-s.player.x)<210)
+        ||(!s.boss.defeated&&Math.abs(s.boss.sprite.x-s.player.x)<500);
+      const waiting=danger&&s.player.x>npc.x&&npc.x>=view.left+45;
+      const dx=target-npc.x;
+      const move=waiting?0:Math.sign(dx)*Math.min(Math.abs(dx),330*delta/1000);
+      npc.x+=move;
+      // Safe scripted hops carry them over gaps; catch up after player respawns.
+      if(Math.abs(dx)>1000){npc.x=target;entry.hop=0;}
+      const gap=s.gaps.some(([a,b])=>npc.x>a-40&&npc.x<b+40);
+      if(gap&&move!==0)entry.hop=(entry.hop||0)+delta/210;
+      else entry.hop=0;
+      npc.y=472-(gap?38+Math.abs(Math.sin(entry.hop))*48:move?Math.abs(Math.sin(s.time.now/90+index))*6:0);
+      npc.setRotation(move?Math.sin(s.time.now/110+index)*.045:0);
+      // Face forward, but preserve the pumpkin hero's asymmetric face.
+      npc.setFlipX(move<0);
     }
   }
 
@@ -57,7 +85,7 @@ export class Rescues {
     s.player.setVelocity(0, 0);
     s.physics.world.pause();
     sound.tone(660, .3, 'triangle', .05);
-    const ui = s.add.container(0, 0).setScrollFactor(0).setDepth(300);
+    const ui = s.add.container((s.scale.gameSize.width-960)/2, 0).setScrollFactor(0).setDepth(300);
     // Pointer hit testing also needs the children's scroll factors set explicitly.
     const add = obj => { obj.setScrollFactor(0); ui.add(obj); return obj; };
     const words = (x, y, message, size = 18, color = '#302638') => add(s.add.text(x, y, message, { fontFamily: 'monospace', fontSize: size, color, align: 'center', lineSpacing: 7 }).setOrigin(.5));
@@ -79,9 +107,10 @@ export class Rescues {
     add(s.add.triangle(695, 231, 0, 0, 20, 0, 10, 18, 0xfff2d5));
     words(697, 174, entry.reply, 15);
     add(s.add.sprite(697, 338, 'imp-idle-0').play('idle').setScale(3));
-    words(480, 458, 'A friend rescued. Three hearts rekindled. The clock waits for you.', 14, '#e2dbc7');
+    words(480, 458, 'A friend rescued. Five hearts rekindled. The clock waits for you.', 14, '#e2dbc7');
     const next = add(s.add.rectangle(480, 502, 372, 42, 0x625175).setStrokeStyle(2, 0xd3b88d).setInteractive({ useHandCursor: true }));
-    words(480, 502, touch.enabled?'Use the CONTINUE button below':'CONTINUE  •  ENTER / SPACE', 17, '#fff0cc');
+    words(480, 502, touch.enabled?'Tap CONTINUE to travel together':'CONTINUE  •  ENTER / SPACE', 17, '#fff0cc');
+    this.activeEntry = entry;
     this.activeComic = ui;
     // Do not allow a held jump/attack to immediately skip the comic.
     this.readyAt = performance.now() + 450;
@@ -103,6 +132,8 @@ export class Rescues {
     const s = this.scene;
     this.activeComic.destroy(true);
     this.activeComic = null;
+    this.activeEntry.following = true;
+    this.activeEntry = null;
     s.inComic = false;
     touch.clear();
     touch.mode('play');

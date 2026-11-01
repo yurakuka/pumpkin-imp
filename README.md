@@ -1,4 +1,4 @@
-# Pumpkin Imp: The Last Halloween
+# Pumpkin Imp: The Last Halloween — v1.1.0
 
 Play: **https://yurakuka.github.io/pumpkin-imp/**
 
@@ -33,7 +33,7 @@ The play server prints the desktop address (port 5173) and LAN addresses (port 5
 
 On phones, turn sideways and use the touch buttons. SCARE is above FIRE (left) and JUMP (right). Multitouch supports movement, jumping and firing together. Page zoom gestures are disabled to keep touch controls stable.
 
-There are 15 pits and 210 seconds until dawn. Every 15 candies restores a heart. Falling costs a heart and returns you to the latest safe bank near the pit. Descending head stomps defeat ground wardens and floating ghosts. Lanterns light as you pass; checkpoint lanterns refill health.
+There are 15 pits, five hearts and 210 seconds until dawn. Every 15 candies restores a heart. Falling costs a heart and returns you to the latest safe bank near the pit. Descending head stomps defeat ground wardens and floating ghosts. Lanterns light as you pass; checkpoint lanterns refill health.
 
 Defeat or scare each friend's three captors to rescue them. Comics pause physics and the countdown; on mobile, use the native TAP TO CONTINUE button below the picture. Rescue progress survives falls. Bone Rex guards the final lantern: eight fireball hits or head stomps defeat it; scare stuns it. Winning opens the friends' reunion and credits.
 
@@ -92,3 +92,9 @@ GitHub builds and deploys automatically after the push. Wait for a successful Ac
 `dist/` is generated and is not tracked. Relative asset paths support repository subpaths. The old release archive remains available in Git history; it is no longer needed for deployment. Reference photographs, local credentials, downloaded tools and machine-specific workspace files are excluded from Git.
 
 All game graphics and audio are generated locally. See `VERIFICATION.md` for test evidence and limitations; physical iPhone Safari has not been directly tested.
+
+## Version 1.1.0
+
+Mobile controls float over the full-height canvas. Wide landscape screens reveal more of the world at the same vertical scale. SCARE affects enemies whose sprites intersect the camera view (8-second cooldown); Bone Rex is stunned. Health starts at five hearts, and checkpoints/rescues refill all five. High jumps have a slightly larger green puff.
+
+Rescued friends travel behind Pumpkin without collision or damage bodies. They hop over pits, wait behind nearby threats and catch up after respawns. The boss battle switches to faster, tense chiptune music; the homecoming and credits use a separate melody. After the final lantern, a lit door opens and all three friends enter before the credits.
