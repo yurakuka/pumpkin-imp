@@ -27,8 +27,7 @@ export class BoneRex {
     scene.physics.add.collider(this.sprite, scene.platforms);
     scene.physics.add.overlap(scene.player, this.sprite, () => {
       if (scene.dead || scene.inComic || this.defeated) return;
-      if(scene.boosted){this.hit();}
-      else if (scene.isStomp(this.sprite)) {
+      if (scene.isStomp(this.sprite)) {
         const top = this.sprite.body.top;
         this.hit();
         scene.bounceFrom(top);
@@ -43,7 +42,7 @@ export class BoneRex {
     });
     this.panel = scene.add.container(0, 0).setScrollFactor(0).setDepth(110);
     this.panel.add(scene.add.rectangle(480, 123, 310, 44, 0x11182c, .94));
-    this.label = scene.add.text(480, 113, 'BONE REX • 10 / 10', { fontFamily: 'monospace', fontSize: 15, color: '#ffe0a0' }).setOrigin(.5);
+    this.label = scene.add.text(480, 113, 'КІСТЯНИЙ РЕКС • 10 / 10', { fontFamily: 'Menlo, Consolas, monospace', resolution: 2, fontSize: 15, color: '#ffe0a0' }).setOrigin(.5);
     this.bar = scene.add.rectangle(480, 135, 272, 6, 0xdf8a63);
     this.panel.add([this.label, this.bar]);
     this.panel.setVisible(false);
@@ -52,12 +51,12 @@ export class BoneRex {
     const s = this.scene;
     if (this.defeated || s.time.now < this.hurtUntil) return false;
     this.hp--;
-    if(this.hp===5){this.phase=2;this.nextStomp=s.time.now+1400;s.toast('BONE REX ENRAGED • Jump over the stomp waves!');this.sprite.setTint(0xed9875);}
+    if(this.hp===5){this.phase=2;this.nextStomp=s.time.now+1400;s.toast('КІСТЯНИЙ РЕКС ЛЮТУЄ • Перестрибуй хвилі від тупоту!');this.sprite.setTint(0xed9875);}
     this.hurtUntil = s.time.now + 320;
     this.sprite.setTintFill(0xffe5c1);
     s.puff(this.sprite.x, this.sprite.y - 20, 0xe6d3a9);
     sound.tone(100, .16, 'square', .04);
-    this.label.setText(`BONE REX • ${this.hp} / 10`);
+    this.label.setText(`КІСТЯНИЙ РЕКС • ${this.hp} / 10`);
     this.bar.setDisplaySize(272 * this.hp / 10, 6);
     if (this.hp === 0) {
       const x = this.sprite.x, y = this.sprite.y;
@@ -69,7 +68,7 @@ export class BoneRex {
       this.panel.setVisible(false);
       for (let i = 0; i < 3; i++) s.puff(x + (i - 1) * 35, y - i * 15, 0xf0dfb9);
       s.lantern.clearTint().setAlpha(1);
-      s.toast('BONE REX DEFEATED • Ride the platform and jump to the lantern!');
+      s.toast('КІСТЯНИЙ РЕКС ПОДОЛАНИЙ • Піднімися платформою до ліхтаря!');
       sound.tone(740, .45, 'triangle', .04);
     }
     return true;
@@ -77,7 +76,7 @@ export class BoneRex {
   scare() {
     if (this.defeated) return;
     this.stunnedUntil = this.scene.time.now + 1800;
-    this.scene.toast('Bone Rex is stunned! Fire or jump on its head.');
+    this.scene.toast('Рекса приголомшено! Стріляй або стрибай йому на голову.');
   }
   throwBone() {
     const s=this.scene;
@@ -108,11 +107,11 @@ export class BoneRex {
       this.introduced = true;
       this.nextThrow=s.time.now+1300;
       sound.setMode('boss');
-      s.toast('BONE REX • Jump over bones or shoot them! Ten hits to win.');
+      s.toast('КІСТЯНИЙ РЕКС • Перестрибуй кістки або збивай їх! Потрібно 10 влучань.');
     }
     if(this.phase===2&&s.time.now>=this.stunnedUntil){
       if(this.windupUntil&&s.time.now>=this.windupUntil)this.stomp();
-      else if(!this.windupUntil&&s.time.now>=this.nextStomp){this.windupUntil=s.time.now+650;b.setTintFill(0xefb38a);s.toast('STOMP! Jump over the ground wave!');}
+      else if(!this.windupUntil&&s.time.now>=this.nextStomp){this.windupUntil=s.time.now+650;b.setTintFill(0xefb38a);s.toast('ТУПІТ! Перестрибни хвилю по землі!');}
     }
     if(s.time.now>=this.stunnedUntil&&!this.windupUntil&&s.time.now>=this.nextThrow){this.throwBone();this.nextThrow=s.time.now+(this.phase===2?1250:1700);}
     if (b.x < 25920) this.direction = 1;

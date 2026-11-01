@@ -20,7 +20,7 @@ export class LanternClimb {
     this.ferry=ferry;
     this.direction=1;
     scene.physics.add.collider(scene.player,ferry);
-    scene.add.text(26605,302,'RIDE → JUMP',{fontFamily:'monospace',fontSize:12,color:'#ffcf77'}).setOrigin(.5);
+    scene.add.text(26605,302,'ЇДЬ → СТРИБАЙ',{fontFamily:'Menlo, Consolas, monospace',resolution:2,fontSize:12,color:'#ffcf77'}).setOrigin(.5);
   }
   update() {
     const s=this.scene,b=this.ferry.body;

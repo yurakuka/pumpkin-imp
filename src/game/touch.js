@@ -83,7 +83,7 @@ class TouchControls {
     this.clear();
     this.interrupt = interrupt;
     document.body.classList.add('controls-active');
-    document.querySelector('[data-control="mute"]').textContent=sound.muted?'MUTED':'SOUND';
+    document.querySelector('[data-control="mute"]').textContent=sound.muted?'ТИША':'ЗВУК';
     window.dispatchEvent(new Event('resize'));
   }
   deactivate() {
@@ -100,7 +100,7 @@ class TouchControls {
     for (const button of document.querySelectorAll('[data-control]')) {
       const action = button.dataset.control;
       button.disabled = mode === 'comic' ? action !== 'mute' : mode === 'paused' && !['pause', 'mute'].includes(action);
-      if (action === 'pause') button.textContent = mode === 'paused' ? 'RESUME' : 'PAUSE';
+      if (action === 'pause') button.textContent = mode === 'paused' ? 'ДАЛІ' : 'ПАУЗА';
     }
   }
 }

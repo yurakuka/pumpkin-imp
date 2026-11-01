@@ -1,47 +1,74 @@
-# Pumpkin Imp: The Last Halloween — v1.4.0
+# Гарбузик: Останній Гелловін — 1.5.0
 
-Play: **https://yurakuka.github.io/pumpkin-imp/**
+[Грати онлайн](https://yurakuka.github.io/pumpkin-imp/)
 
-A playable Phaser 3 / JavaScript / Vite platformer with generated pixel art, original chiptune music and desktop/mobile controls. Rescue the Little Duck and Countess Larisa, defeat Bone Rex, and recover Halloween's lantern before dawn.
+Український браузерний платформер на **Phaser 3, JavaScript і Vite**. Гарбузик збирає цукерки, рятує Качечку та Графиню Ларису й повертає чарівний ліхтар до світанку. Графіка та чиптюн створюються локально; серверна частина й зовнішні ігрові сервіси не потрібні.
 
-## Run locally
+## Запуск
 
-Install Node.js 22 LTS (or newer), then:
+Потрібен Node.js 22 або новіший. У терміналі з папки проєкту:
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Open the local URL printed by Vite. For a stable local build and Wi-Fi sharing:
+Відкрий адресу, яку виведе Vite. Щоб завершити сервер, натисни **Ctrl+C**.
+
+Для стабільної локальної збірки та гри через спільний Wi-Fi:
 
 ```sh
 npm run build
 npm run play
 ```
 
-The play server prints the desktop address (port 5173) and LAN addresses (port 5175). Phones must be on the same Wi-Fi. Each browser runs an independent game; no backend or accounts are needed. The computer must remain on only for local hosting. The GitHub Pages version is hosted independently.
+Локальна адреса — порт 5173; доступ із локальної мережі — порт 5175. Кожен браузер запускає окрему гру. Для версії на GitHub Pages комп’ютер можна вимикати.
 
-## Controls and adventure
+## Керування
 
-- A/D or Left/Right: move
-- Space: jump; hold for a high jump
-- J: fireballs
-- K: scare all visible enemies; 8-second cooldown
-- Escape: pause/resume
-- M: mute/unmute
+- **A/D або ←/→** — рух.
+- **Пробіл** — стрибок; утримуй для високого, відпусти для короткого.
+- **J** — вогняні кулі.
+- **K** — налякати всіх видимих ворогів; відновлення 8 секунд.
+- **Esc** — пауза; **M** — звук.
 
-On phones, turn sideways and use the touch buttons. SCARE is above FIRE (left) and JUMP (right). Multitouch supports movement, jumping and firing together. Page zoom gestures are disabled to keep touch controls stable.
+На телефоні поверни екран горизонтально. Кнопки розташовані поверх гри: БУ! зверху, ВОГОНЬ ліворуч, СТРИБОК праворуч. Підтримується одночасне утримання кількох кнопок. На телефонах камера трохи наближена; на планшетах і ПК масштаб звичайний.
 
-There are 15 pits, five hearts and 210 seconds until dawn. Every 15 candies restores a heart. Falling costs a heart and returns you to the latest safe bank near the pit. Descending head stomps defeat ground wardens and floating ghosts. Lanterns light as you pass; checkpoint lanterns refill health.
+## Пригода
 
-Defeat or scare each friend's three captors to rescue them. Comics pause physics and the countdown; on mobile, use the native TAP TO CONTINUE button below the picture. Rescue progress survives falls. Bone Rex guards the final lantern: ten fireball hits or head stomps defeat it; scare stuns it. Winning opens the friends' reunion and credits.
+На рівні 15 ям, п’ять сердець і 210 секунд до світанку. Кожні 15 цукерок відновлюють серце. **За 50 цукерок жодного збільшення чи прискорення немає.** Падіння забирає серце й повертає на останній безпечний берег.
 
-## Publish changes from the console
+Барон Пірат Вовк дає настанови на старті та залишається там. Щоб урятувати друзів, здолай або налякай трьох їхніх вартових. Під час коміксу час зупиняється; кнопка ДАЛІ продовжує пригоду. Друзі не отримують ушкоджень і плавно йдуть за Гарбузиком.
 
-This repository now contains the editable source directly. A push to `main` runs `.github/workflows/deploy.yml`: install locked dependencies with `npm ci`, build the game, and publish `dist/` to GitHub Pages. The public URL stays the same.
+У середині рівня починається одна погоня: голодний туман із примарними обличчями випускає пазурі після попередження. Перестрибуй їх або збивай вогнем; дотик забирає серце. Після падіння туман відступає від безпечного берега. За успішну втечу додається 10 секунд.
 
-On a new computer, install Git and GitHub CLI, clone this repository and authenticate once:
+Три клоуни з бензопилами повільно ходять, сміються й перестрибують ями. Кожному потрібно п’ять влучань. Кістяний Рекс витримує десять влучань; на п’яти серцях переходить у другу фазу й створює хвилі від тупоту. Кістки можна збивати вогнем, хвилі — перестрибувати.
+
+Після перемоги піднімися рухомою платформою до верхнього ліхтаря. Біля окремо розташованої висотки LivUp виходить Вартова Принцеса Ґудзик і запрошує друзів усередину. Через дві секунди після входу лунає жартівливий крик, потім сміх, святкування й українські титри з результатами. Усі звуки синтезуються в браузері та вимикаються кнопкою звуку.
+
+## Публікація змін
+
+На цьому налаштованому Mac у папці проєкту виконай:
+
+```sh
+./publish-game "Опис змін"
+```
+
+Або за наявності npm:
+
+```sh
+npm run publish:game -- "Опис змін"
+```
+
+Команда перевірить доступ, збере гру, створить коміт, відправить його в `main` і дочекається GitHub Actions. Сайт оновиться за тією самою адресою. Саме збереження файлів публікацію не запускає. У разі помилки команда зупиниться; примусова перезаписувальна відправка не використовується.
+
+Перевірка доступу без публікації:
+
+```sh
+./publish-game --check
+```
+
+На іншому комп’ютері встанови Git, GitHub CLI та Node.js, клонуй репозиторій і виконай одноразову авторизацію:
 
 ```sh
 gh auth login --hostname github.com --git-protocol https --scopes workflow
@@ -49,76 +76,4 @@ gh auth setup-git
 npm ci
 ```
 
-Publish a finished change with:
-
-```sh
-npm run publish:game -- "Describe the update"
-```
-
-Or on this configured Mac, without npm on PATH:
-
-```sh
-./publish-game "Describe the update"
-```
-
-The command checks authentication and the remote, builds locally, commits changes, pushes `main`, and waits for GitHub Actions. It stops if a build, push or deployment fails and never force-pushes. Local edits alone are not uploaded. If a push fails after a commit, rerun the command to push that existing commit.
-
-Check publishing access without changing remote files:
-
-```sh
-npm run publish:check
-# Or: ./publish-game --check
-```
-
-A normal Git workflow also works:
-
-```sh
-git add .
-git commit -m "Describe the update"
-git push
-```
-
-GitHub builds and deploys automatically after the push. Wait for a successful Actions run before announcing an update. Browser control is not required after CLI authentication.
-
-## Structure and hosting
-
-- `src/game/`: generated graphics, sound, touch input, rescues, boss, lanterns and native screen actions
-- `src/scenes/`: title, graveyard, defeat and credits
-- `scripts/publish.mjs`: checked console publication
-- `scripts/tooling.mjs`: portable tool discovery with this workspace's bundled-runtime fallback
-- `scripts/serve.mjs`: stable static local hosting
-- `.github/workflows/deploy.yml`: source build and Pages deployment
-
-`dist/` is generated and is not tracked. Relative asset paths support repository subpaths. The old release archive remains available in Git history; it is no longer needed for deployment. Reference photographs, local credentials, downloaded tools and machine-specific workspace files are excluded from Git.
-
-All game graphics and audio are generated locally. See `VERIFICATION.md` for test evidence and limitations; physical iPhone Safari has not been directly tested.
-
-## Version 1.2.0
-
-Mobile controls float over the full-height canvas. Wide landscape screens reveal more of the world at the same vertical scale. SCARE affects enemies whose sprites intersect the camera view (8-second cooldown); Bone Rex is stunned. Health starts at five hearts, and checkpoints/rescues refill all five. High jumps have a slightly larger green puff.
-
-Rescued friends travel behind Pumpkin without collision or damage bodies. They hop over pits, wait behind nearby threats and catch up after respawns. The boss battle switches to faster, tense chiptune music; the homecoming and credits use a separate melody. After the final lantern, a lit door opens and all three friends enter before the credits.
-
-## Version 1.2.0
-
-Companions keep a minimum 78-pixel separation in an ordered train (Larisa, then Duck), including catches, reversals and respawns. Fear lasts four seconds; Bone Rex's stun lasts 1.8 seconds. Bone Rex throws a slow, low bone every 2.2 seconds during combat. Jump over it or shoot it; projectiles can only damage Pumpkin and disappear on boss defeat.
-
-After the boss, use the low step and moving ferry to jump onto the upper lantern balcony. The final lantern cannot be reached from the ground. Activate it to open the homecoming door.
-
-## Version 1.3.0
-
-Friends travel close to Pumpkin in a fixed train (Larisa, then Duck), with their full sprites kept inside the camera and outside the left mobile buttons.
-
-At 11,800–14,300 pixels, a single hungry-fog chase starts; run to the far light to gain 10 seconds. The fog deals contact damage and resets behind the safe bank after a fall. Three tall chainsaw clowns appear at 4,850, 17,300 and 23,000 pixels: jump over them, scare them for four seconds, or defeat each with three fireballs. Their buzz is synthesized locally.
-
-Every 50 candies grants 10 seconds of Halloween Frenzy: double running speed (480 vs 240), a higher jump (740 vs 570 launch speed), faster music, invulnerability to enemy attacks and instant contact defeats of regular enemies, including clowns. Boss contact deals damage with the boss's normal hit cooldown. Falls still cost a heart. The boost timer freezes while paused or in a comic.
-
-Bone Rex enters phase two at four remaining HP: faster patrols/throws and a 650ms stomp warning followed by ground waves. Jump over the waves. The upper lantern and platforms stand apart from the tall glass-and-balcony LivUp building; the final door is its ground-floor entrance. After entering, the three friends dance amid confetti before credits and results.
-
-## Version 1.4.0 (current behavior; supersedes older release notes)
-
-Clowns walk at 90px/s, laugh in four rough synthesized syllables, take five hits, and calculate a ballistic leap to the opposite bank of a pit. Fear temporarily makes them retreat at 130px/s. Friends use a damped train in camera coordinates without per-frame clamps or catch-up teleports. Warden arms/legs now have eight small pixel animation steps instead of two abrupt poses.
-
-Every 50 candies now grants Giant Imp for eight seconds: the visible hero is three times normal size, immune to enemy attacks and defeats regular enemies on contact. Movement stays at 240px/s, jump launch speed stays at 570px/s, and music tempo is unchanged. A compact physics body keeps the temporary visual growth from trapping the player under platforms; the giant visual bounds determine contact attacks. Falls still cost a heart.
-
-Bone Rex has ten HP, phase two begins at five HP, and bone intervals are 1.7s / 1.25s (first throw after 1.3s). Bone speed and stomp warning remain unchanged. Only coarse-pointer phones with a screen short side <=540 CSS pixels receive a 1.12 camera zoom; tablets and desktop retain 1.0. HUD/comics/pause UI compensate for zoom.
+Workflow `.github/workflows/deploy.yml` реагує на відправку в `main`, виконує `npm ci`, `npm run build` і публікує `dist/` на GitHub Pages. Інші рівні не додавалися.
