@@ -17,7 +17,12 @@ class ScreenActions {
         if (event.type === 'pointerdown') event.preventDefault();
         if (this.owner !== owner || this.busy) return;
         this.busy = true;
-        try { action.run(); }
+        try {
+          // HTML controls can be tapped while the canvas loop is still asleep.
+          // Resume on the explicit gesture before queuing scene transitions.
+          if(!document.hidden){scene.game.resume();if(!scene.game.loop.running)scene.game.loop.wake();}
+          action.run();
+        }
         finally {
           // Debounce pointerdown + click, then unlock actions that keep this scene open.
           setTimeout(() => { if (this.owner === owner) this.busy = false; }, 300);

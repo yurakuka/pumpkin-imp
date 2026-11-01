@@ -14,7 +14,7 @@ export class Menu extends Phaser.Scene {
   text(this,480,65,'ГАРБУЗИК',48,'#ffbc61');text(this,480,114,'ОСТАННІЙ ГЕЛЛОВІН',23,'#d6b4dc');
   this.add.sprite(480,210,'imp-idle-0').setScale(2.5).play('idle');
   text(this,480,305,'Ліхтар викрадено. Світанок близько.\nПоверни Гелловін додому.',17);
-  text(this,480,400,'v1.5.1 • Пригода під місяцем • Радимо навушники',13,'#949caf');
+  text(this,480,400,'v1.5.2 • Пригода під місяцем • Радимо навушники',13,'#949caf');
   this.menuActions();
   this.input.keyboard.on('keydown-ENTER',()=>{if(!this.instructionsBox)this.play();});
  }

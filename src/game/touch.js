@@ -22,6 +22,7 @@ class TouchControls {
     }
     let lastTap = -Infinity;
     document.addEventListener('touchend', event => {
+      if(sound.requested)sound.start();
       const now = performance.now();
       if (now - lastTap < 320) preventGesture(event);
       lastTap = now;
