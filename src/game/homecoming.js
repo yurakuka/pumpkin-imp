@@ -29,7 +29,7 @@ export class Homecoming {
     s.tweens.add({targets:[this.light,this.glow],alpha:1,duration:800});
     s.tweens.add({targets:this.door,scaleX:.06,duration:1000,delay:350,ease:'Sine.easeInOut'});
     s.tweens.add({targets:this.knob,alpha:0,duration:400});
-    const actors=[s.player,...s.rescues.entries.map(e=>e.npc)];
+    const actors=[s.player,...[...s.rescues.entries].reverse().map(e=>e.npc)];
     actors.forEach((actor,index)=>{
       s.time.delayedCall(1300+index*550,()=>{
         if(index===0)actor.play('run');

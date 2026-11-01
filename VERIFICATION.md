@@ -150,3 +150,8 @@ Final production check on desktop Chromium: reached a real game-over through nor
 ## v1.1.0
 
 Automated Chrome mobile viewport (844×390, DPR 2): canvas fills 844×389.86 with virtual width 1169, and touch controls overlay it. Verified five starting hearts; all four on-screen foes frightened while distant foes remain unaffected; rescue comic Continue joins the duck as an invulnerable follower; both followers have no physics bodies; boss music mode, eight-hit defeat, door sequence, credits music, and Play Again resetting to five hearts. No browser page errors in this flow. Test jumped to encounter locations; a full uninterrupted run and physical iPhone/Safari audio/fullscreen behavior remain untested.
+
+
+## v1.2.0
+
+Chrome mobile viewport 844×390: 1800 simulated follow steps with fast movement, reversal and respawn maintained >=78px separation. Visible-enemy fear measured 4000ms. Real Arcade bone overlap reduced health 5→4; fireball overlap destroyed the bone; companions have no damage bodies. Moving ferry carried the player by the same horizontal delta (26.4px over the observation). Held jump/right input landed on the final balcony at body bottom y=230. The lantern remained locked before boss defeat; activating it after defeat led to Credits. No page errors. Full uninterrupted playthrough and physical iPhone Safari remain untested.

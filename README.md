@@ -1,4 +1,4 @@
-# Pumpkin Imp: The Last Halloween — v1.1.0
+# Pumpkin Imp: The Last Halloween — v1.2.0
 
 Play: **https://yurakuka.github.io/pumpkin-imp/**
 
@@ -93,8 +93,14 @@ GitHub builds and deploys automatically after the push. Wait for a successful Ac
 
 All game graphics and audio are generated locally. See `VERIFICATION.md` for test evidence and limitations; physical iPhone Safari has not been directly tested.
 
-## Version 1.1.0
+## Version 1.2.0
 
 Mobile controls float over the full-height canvas. Wide landscape screens reveal more of the world at the same vertical scale. SCARE affects enemies whose sprites intersect the camera view (8-second cooldown); Bone Rex is stunned. Health starts at five hearts, and checkpoints/rescues refill all five. High jumps have a slightly larger green puff.
 
 Rescued friends travel behind Pumpkin without collision or damage bodies. They hop over pits, wait behind nearby threats and catch up after respawns. The boss battle switches to faster, tense chiptune music; the homecoming and credits use a separate melody. After the final lantern, a lit door opens and all three friends enter before the credits.
+
+## Version 1.2.0
+
+Companions keep a minimum 78-pixel separation in an ordered train (Larisa, then Duck), including catches, reversals and respawns. Fear lasts four seconds; Bone Rex's stun lasts 1.8 seconds. Bone Rex throws a slow, low bone every 2.2 seconds during combat. Jump over it or shoot it; projectiles can only damage Pumpkin and disappear on boss defeat.
+
+After the boss, use the low step and moving ferry to jump onto the upper lantern balcony. The final lantern cannot be reached from the ground. Activate it to open the homecoming door.

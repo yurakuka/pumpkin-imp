@@ -54,26 +54,30 @@ export class Rescues {
     const s=this.scene;
     if(s.inComic||s.escaping||s.dead)return;
     const view=s.cameras.main.worldView;
-    for(const [index,entry] of this.entries.entries()){
-      if(!entry.following)continue;
-      const npc=entry.npc;
-      // Companions are visual actors: no collision or damage bodies.
-      const target=Math.max(40,Math.min(s.player.x-85-index*58,view.left+145+index*62));
-      const danger=s.enemies.getChildren().some(e=>e.active&&!e.banished&&s.time.now>=e.fear&&Math.abs(e.x-s.player.x)<210)
-        ||(!s.boss.defeated&&Math.abs(s.boss.sprite.x-s.player.x)<500);
+    // One ordered train: Larisa leads, Duck follows. Both use the same anchor
+    // and the trailing actor can never cross the leader, even during catch-up.
+    const followers=this.entries.filter(e=>e.following).sort((a,b)=>a.key==='larisa'?-1:b.key==='larisa'?1:0);
+    const spacing=78;
+    const anchor=Math.max(130,Math.min(s.player.x-100,view.left+207));
+    const danger=s.enemies.getChildren().some(e=>e.active&&!e.banished&&s.time.now>=e.fear&&Math.abs(e.x-s.player.x)<210)
+      ||(!s.boss.defeated&&Math.abs(s.boss.sprite.x-s.player.x)<500);
+    let leader=null;
+    for(const [index,entry] of followers.entries()){
+      const npc=entry.npc,oldX=npc.x;
+      const target=anchor-index*spacing;
       const waiting=danger&&s.player.x>npc.x&&npc.x>=view.left+45;
       const dx=target-npc.x;
-      const move=waiting?0:Math.sign(dx)*Math.min(Math.abs(dx),330*delta/1000);
-      npc.x+=move;
-      // Safe scripted hops carry them over gaps; catch up after player respawns.
       if(Math.abs(dx)>1000){npc.x=target;entry.hop=0;}
+      else if(!waiting)npc.x+=Math.sign(dx)*Math.min(Math.abs(dx),330*Math.min(delta,100)/1000);
+      if(leader)npc.x=Math.min(npc.x,leader.x-spacing);
+      const move=npc.x-oldX;
       const gap=s.gaps.some(([a,b])=>npc.x>a-40&&npc.x<b+40);
       if(gap&&move!==0)entry.hop=(entry.hop||0)+delta/210;
       else entry.hop=0;
       npc.y=472-(gap?38+Math.abs(Math.sin(entry.hop))*48:move?Math.abs(Math.sin(s.time.now/90+index))*6:0);
       npc.setRotation(move?Math.sin(s.time.now/110+index)*.045:0);
-      // Face forward, but preserve the pumpkin hero's asymmetric face.
       npc.setFlipX(move<0);
+      leader=npc;
     }
   }
 

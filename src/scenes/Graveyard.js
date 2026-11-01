@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { LanternClimb } from '../game/lanternClimb.js';
 import { Homecoming } from '../game/homecoming.js';
 import { BoneRex } from '../game/boss.js';
 import { PathLights } from '../game/pathLights.js';
@@ -26,7 +27,9 @@ export class Graveyard extends Phaser.Scene {
  this.shots=this.physics.add.group({allowGravity:false});this.physics.add.collider(this.shots,this.platforms,b=>b.destroy());this.physics.add.overlap(this.shots,this.enemies,(b,e)=>{if(!b.active||!e.active)return;b.destroy();this.defeatEnemy(e)});
  this.physics.add.overlap(this.player,this.candies,(_,c)=>{c.destroy();this.candy++;sound.tone(720,.07,'sine',.03);if(this.candy%15===0){this.hp=Math.min(MAX_HEALTH,this.hp+1);this.toast('Candy magic restored a heart!');}});
  this.checkpoints=[9000,18000].map((x,i)=>{this.add.rectangle(x,425,6,94,0x8a7290);const c=this.physics.add.staticImage(x,370,'lantern').setTint(0x887b9b);c.index=i+1;c.glow=this.add.circle(x,370,65,0xffc968,0).setDepth(5);return c;});for(const c of this.checkpoints)this.physics.add.overlap(this.player,c,()=>{this.activateCheckpoint(c)});
- this.add.rectangle(WIDTH-250,420,180,104,0x32374c).setStrokeStyle(2,0x6f6c82);this.lantern=this.physics.add.staticImage(WIDTH-250,320,'lantern').setScale(2).refreshBody();this.tweens.add({targets:this.lantern,y:305,duration:900,yoyo:true,repeat:-1});this.physics.add.overlap(this.player,this.lantern,()=>{if(!this.boss.defeated)this.toast('Defeat Bone Rex before claiming the final lantern!');else if(this.rescues.completed===2)this.homecoming.start();else this.toast('Rescue both friends before taking the lantern!');});
+ this.climb=new LanternClimb(this);
+ this.lantern=this.physics.add.staticImage(26835,190,'lantern').setScale(1.4).refreshBody().setDepth(12);
+ this.physics.add.overlap(this.player,this.lantern,()=>{if(!this.boss.defeated)this.toast('Defeat Bone Rex before claiming the final lantern!');else if(this.rescues.completed===2)this.homecoming.start();else this.toast('Rescue both friends before taking the lantern!');});
  this.cameras.main.startFollow(this.player,true,.09,.09,-120,50);
  this.keys=this.input.keyboard.addKeys({left:'LEFT',right:'RIGHT',a:'A',d:'D',jump:'SPACE',fire:'J',scare:'K',pause:'ESC',mute:'M',enter:'ENTER'});
  this.hud=this.add.container(0,0).setScrollFactor(0).setDepth(100);this.hud.add(this.add.rectangle(480,31,960,62,0x101424,.94));this.hearts=text(this,94,28,'',24,'#ef987a').setScrollFactor(0);this.counter=text(this,320,28,'',14).setScrollFactor(0);this.clock=text(this,570,28,'',18).setScrollFactor(0);this.hud.add([this.hearts,this.counter,this.clock]);
@@ -90,7 +93,7 @@ export class Graveyard extends Phaser.Scene {
  const flash=this.add.rectangle(view.centerX,view.centerY,view.width,view.height,0xc8a2e8,.15).setDepth(15);
  this.tweens.add({targets:flash,alpha:0,duration:450,onComplete:()=>flash.destroy()});
  const visible=e=>e.active&&Phaser.Geom.Intersects.RectangleToRectangle(view,e.getBounds());
- for(const e of this.enemies.getChildren())if(visible(e)){e.fear=now+2800;e.dir=e.x<p.x?-1:1;e.setTint(0xc29ee0);}
+ for(const e of this.enemies.getChildren())if(visible(e)){e.fear=now+4000;e.dir=e.x<p.x?-1:1;e.setTint(0xc29ee0);}
  if(!this.boss.defeated&&visible(this.boss.sprite))this.boss.scare();
  }
  rememberSafeGround(){
@@ -102,7 +105,7 @@ export class Graveyard extends Phaser.Scene {
  this.safeGround={x:p.x,y:p.y};
  }
  }
- platform(x,y,w,h){const p=this.add.tileSprite(x,y,w,h,'ground').setOrigin(0);this.physics.add.existing(p,true);this.platforms.add(p);}
+ platform(x,y,w,h){const p=this.add.tileSprite(x,y,w,h,'ground').setOrigin(0);this.physics.add.existing(p,true);this.platforms.add(p);return p;}
  scenery(){this.add.rectangle(0,0,WIDTH,650,0x11182c).setOrigin(0);const moon=this.add.circle(730,120,57,0xd1d4ad,.9).setScrollFactor(0);this.add.circle(730,120,74,0xabbda2,.06).setScrollFactor(0);for(let i=0;i<150;i++)this.add.rectangle((i*131)%7000,35+(i*47)%270,i%4===0?3:2,2,0xa4b0be,.6).setScrollFactor(.15);
  for(let i=0;i<170;i++){const x=i*235;this.add.triangle(x,440,0,0,85,-140-(i%4)*25,170,0,0x202b41).setScrollFactor(.4);}
  for(let i=0;i<200;i++){let x=i*182;this.add.rectangle(x,385,12,175,0x192133).setScrollFactor(.7);this.add.line(0,0,x,320,x-42,275,0x192133).setLineWidth(5).setScrollFactor(.7);this.add.line(0,0,x,350,x+50,290,0x192133).setLineWidth(4).setScrollFactor(.7);}
@@ -143,6 +146,7 @@ export class Graveyard extends Phaser.Scene {
  const anim=now<this.hurtUntil-1100?'hit':now<this.attackUntil?'attack':!onGround?'jump':Math.abs(p.body.velocity.x)>10?'run':'idle';p.play(anim,true);p.setAlpha(now<this.hurtUntil?(Math.floor(now/90)%2?.45:1):1);
  this.hint.setText(now<this.scareAt?`J Fire   K Scare: ${((this.scareAt-now)/1000).toFixed(1)}s   •   ESC Pause`:'A/D Move   SPACE Jump   J Fire   K Scare READY   ESC Pause');
  if(touch.enabled)this.hint.setText(now<this.scareAt?`SCARE recharges in ${((this.scareAt-now)/1000).toFixed(1)}s`:'Hold FIRE to shoot • Hold JUMP for a higher leap');
+ this.climb.update();
  this.pathLights.update();
  for(const c of this.checkpoints)if(p.x>=c.x-35)this.activateCheckpoint(c);
  this.boss.update();

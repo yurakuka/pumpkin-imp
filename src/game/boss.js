@@ -8,6 +8,17 @@ export class BoneRex {
     this.hurtUntil = 0;
     this.stunnedUntil = 0;
     this.direction = -1;
+    this.nextThrow = 0;
+    this.bones = scene.physics.add.group({allowGravity:false});
+    scene.physics.add.overlap(scene.player,this.bones,(_,bone)=>{
+      if(!bone.active||scene.dead||scene.inComic||scene.escaping)return;
+      const x=bone.x;bone.destroy();scene.damage(x);
+    });
+    scene.physics.add.overlap(scene.shots,this.bones,(shot,bone)=>{
+      if(!shot.active||!bone.active)return;
+      scene.puff(bone.x,bone.y,0xe8dfbf);shot.destroy();bone.destroy();
+      sound.tone(360,.08,'square',.025);
+    });
     this.sprite = scene.physics.add.sprite(26200, 390, 'rex0').setScale(3).play('rex');
     this.sprite.setSize(46, 42).setOffset(3, 4);
     this.sprite.setMaxVelocity(150, 800);
@@ -48,30 +59,46 @@ export class BoneRex {
       const x = this.sprite.x, y = this.sprite.y;
       this.defeated = true;
       this.sprite.destroy();
+      this.bones.clear(true,true);
       sound.setMode('adventure');
       this.panel.setVisible(false);
       for (let i = 0; i < 3; i++) s.puff(x + (i - 1) * 35, y - i * 15, 0xf0dfb9);
       s.lantern.clearTint().setAlpha(1);
-      s.toast('BONE REX DEFEATED • The final lantern is yours!');
+      s.toast('BONE REX DEFEATED • Ride the platform and jump to the lantern!');
       sound.tone(740, .45, 'triangle', .04);
     }
     return true;
   }
   scare() {
     if (this.defeated) return;
-    this.stunnedUntil = this.scene.time.now + 1200;
+    this.stunnedUntil = this.scene.time.now + 1800;
     this.scene.toast('Bone Rex is stunned! Fire or jump on its head.');
   }
+  throwBone() {
+    const s=this.scene;
+    if(this.defeated||s.dead||s.inComic||s.escaping)return;
+    const direction=s.player.x<this.sprite.x?-1:1;
+    const bone=this.bones.create(this.sprite.x+direction*68,440,'bone').setDepth(14);
+    bone.setSize(24,10).setOffset(2,2);
+    // A low, readable shot with a fixed launch direction: jump or shoot it.
+    bone.setVelocityX(direction*155).setAngularVelocity(direction*210);
+    bone.expires=s.time.now+6500;
+    sound.tone(175,.12,'triangle',.035);
+  }
   update() {
+    const s=this.scene;
+    for(const bone of this.bones.getChildren())if(s.time.now>bone.expires||Math.abs(bone.x-s.player.x)>1500)bone.destroy();
     if (this.defeated) return;
-    const s = this.scene, b = this.sprite;
+    const b = this.sprite;
     if (Math.abs(s.player.x - b.x) > 1050) { b.setVelocityX(0); this.panel.setVisible(false); return; }
     this.panel.setVisible(true);
     if (!this.introduced) {
       this.introduced = true;
+      this.nextThrow=s.time.now+1800;
       sound.setMode('boss');
-      s.toast('BONE REX • Eight hits! Fireballs or head stomps.');
+      s.toast('BONE REX • Jump over bones or shoot them! Eight hits to win.');
     }
+    if(s.time.now>=this.stunnedUntil&&s.time.now>=this.nextThrow){this.throwBone();this.nextThrow=s.time.now+2200;}
     if (b.x < 25920) this.direction = 1;
     if (b.x > 26450) this.direction = -1;
     b.setVelocityX(s.time.now < this.stunnedUntil ? 0 : this.direction * 72);
