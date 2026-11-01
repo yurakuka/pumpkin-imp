@@ -155,3 +155,8 @@ Automated Chrome mobile viewport (844×390, DPR 2): canvas fills 844×389.86 wit
 ## v1.2.0
 
 Chrome mobile viewport 844×390: 1800 simulated follow steps with fast movement, reversal and respawn maintained >=78px separation. Visible-enemy fear measured 4000ms. Real Arcade bone overlap reduced health 5→4; fireball overlap destroyed the bone; companions have no damage bodies. Moving ferry carried the player by the same horizontal delta (26.4px over the observation). Held jump/right input landed on the final balcony at body bottom y=230. The lantern remained locked before boss defeat; activating it after defeat led to Credits. No page errors. Full uninterrupted playthrough and physical iPhone Safari remain untested.
+
+
+## v1.3.0
+
+Chrome desktop and mobile viewport checks passed with no page errors. Tested 1000 follower movement steps: both actors stay within camera bounds, beyond the left touch buttons and 78px apart. A real 50th-candy overlap enabled Frenzy; running velocity measured 480; contact defeated a clown without player damage; timer expiry restored normal state. Three separate projectile overlaps reduced a clown from 3 HP to defeat. Fog triggered once and did not restart after completion; contact damage and safe-bank reset verified. At 4 HP, boss phase two telegraphed a stomp and spawned two waves; wave contact damaged the player and an actual jump avoided it. Boosted jump and pause-frozen boost timer checked. Verified house/door → animated Celebration → Credits/results → clean restart (five hearts, three clowns, no boost, fresh fog). Local production build and GitHub Pages publication are verified during release. Full uninterrupted playthrough, physical iPhone/Safari behavior and subjective audio mix remain untested.

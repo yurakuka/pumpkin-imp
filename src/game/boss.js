@@ -3,7 +3,9 @@ import { sound } from './audio.js';
 export class BoneRex {
   constructor(scene) {
     this.scene = scene;
-    this.hp = 8;
+    this.hp = 8;this.phase=1;this.nextStomp=0;this.windupUntil=0;
+    this.waves=scene.physics.add.group({allowGravity:false});
+    scene.physics.add.overlap(scene.player,this.waves,(_,wave)=>{if(wave.active&&!scene.escaping){const x=wave.x;wave.destroy();scene.damage(x);}});
     this.defeated = false;
     this.hurtUntil = 0;
     this.stunnedUntil = 0;
@@ -25,7 +27,8 @@ export class BoneRex {
     scene.physics.add.collider(this.sprite, scene.platforms);
     scene.physics.add.overlap(scene.player, this.sprite, () => {
       if (scene.dead || scene.inComic || this.defeated) return;
-      if (scene.isStomp(this.sprite)) {
+      if(scene.boosted){this.hit();}
+      else if (scene.isStomp(this.sprite)) {
         const top = this.sprite.body.top;
         this.hit();
         scene.bounceFrom(top);
@@ -49,6 +52,7 @@ export class BoneRex {
     const s = this.scene;
     if (this.defeated || s.time.now < this.hurtUntil) return false;
     this.hp--;
+    if(this.hp===4){this.phase=2;this.nextStomp=s.time.now+1400;s.toast('BONE REX ENRAGED • Jump over the stomp waves!');this.sprite.setTint(0xed9875);}
     this.hurtUntil = s.time.now + 320;
     this.sprite.setTintFill(0xffe5c1);
     s.puff(this.sprite.x, this.sprite.y - 20, 0xe6d3a9);
@@ -60,6 +64,7 @@ export class BoneRex {
       this.defeated = true;
       this.sprite.destroy();
       this.bones.clear(true,true);
+      this.waves.clear(true,true);
       sound.setMode('adventure');
       this.panel.setVisible(false);
       for (let i = 0; i < 3; i++) s.puff(x + (i - 1) * 35, y - i * 15, 0xf0dfb9);
@@ -85,9 +90,16 @@ export class BoneRex {
     bone.expires=s.time.now+6500;
     sound.tone(175,.12,'triangle',.035);
   }
+  stomp(){
+    const s=this.scene;this.windupUntil=0;
+    s.cameras.main.shake(160,.006);sound.tone(48,.3,'sawtooth',.045);
+    for(const dir of [-1,1]){const wave=this.waves.create(this.sprite.x+dir*76,459,'shockwave').setDepth(12);wave.setVelocityX(dir*215);wave.expires=s.time.now+3800;}
+    this.nextStomp=s.time.now+3600;
+  }
   update() {
     const s=this.scene;
     for(const bone of this.bones.getChildren())if(s.time.now>bone.expires||Math.abs(bone.x-s.player.x)>1500)bone.destroy();
+    for(const w of this.waves.getChildren())if(s.time.now>w.expires)w.destroy();
     if (this.defeated) return;
     const b = this.sprite;
     if (Math.abs(s.player.x - b.x) > 1050) { b.setVelocityX(0); this.panel.setVisible(false); return; }
@@ -98,11 +110,15 @@ export class BoneRex {
       sound.setMode('boss');
       s.toast('BONE REX • Jump over bones or shoot them! Eight hits to win.');
     }
-    if(s.time.now>=this.stunnedUntil&&s.time.now>=this.nextThrow){this.throwBone();this.nextThrow=s.time.now+2200;}
+    if(this.phase===2&&s.time.now>=this.stunnedUntil){
+      if(this.windupUntil&&s.time.now>=this.windupUntil)this.stomp();
+      else if(!this.windupUntil&&s.time.now>=this.nextStomp){this.windupUntil=s.time.now+650;b.setTintFill(0xefb38a);s.toast('STOMP! Jump over the ground wave!');}
+    }
+    if(s.time.now>=this.stunnedUntil&&!this.windupUntil&&s.time.now>=this.nextThrow){this.throwBone();this.nextThrow=s.time.now+(this.phase===2?1600:2200);}
     if (b.x < 25920) this.direction = 1;
     if (b.x > 26450) this.direction = -1;
-    b.setVelocityX(s.time.now < this.stunnedUntil ? 0 : this.direction * 72);
+    b.setVelocityX(s.time.now < this.stunnedUntil||this.windupUntil ? 0 : this.direction * (this.phase===2?95:72));
     b.setFlipX(this.direction < 0);
-    if (s.time.now >= this.hurtUntil) b.clearTint();
+    if (s.time.now >= this.hurtUntil&&!this.windupUntil) {b.clearTint();if(this.phase===2)b.setTint(0xed9875);}
   }
 }

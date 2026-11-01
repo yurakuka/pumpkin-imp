@@ -1,0 +1,24 @@
+import Phaser from 'phaser';
+import { backdrop, text } from '../scenes/Menu.js';
+import { sound } from './audio.js';
+export class Celebration extends Phaser.Scene {
+ constructor(){super('Celebration');}
+ init(result){this.result=result;}
+ create(){
+  backdrop(this);sound.setBoost(false);sound.setMode('credits');
+  text(this,480,56,'HALLOWEEN, TOGETHER!',34,'#ffcf77');
+  text(this,480,103,'One brave pumpkin. Two wonderful friends. A night to remember.',15);
+  this.add.rectangle(480,413,690,90,0x47354e).setStrokeStyle(3,0x9a697b);
+  for(const x of [280,680]){this.add.image(x,366,'lantern');this.add.circle(x,356,42,0xffce75,.13);}
+  const actors=[this.add.image(315,355,'duck').setOrigin(.5,1).setScale(2),this.add.sprite(480,355,'imp-idle-0').play('idle').setOrigin(.5,1).setScale(2),this.add.image(645,355,'larisa').setOrigin(.5,1).setScale(1.6)];
+  actors.forEach((a,i)=>{this.tweens.add({targets:a,y:a.y-25,angle:i%2?6:-6,duration:360+i*65,yoyo:true,repeat:-1});});
+  text(this,315,205,'Quack-quack!\nHappy Halloween!',16,'#ffe598');
+  text(this,645,205,'To our brave friend!\nLet us celebrate!',16,'#dfc3ed');
+  for(let i=0;i<38;i++){
+   const p=this.add.rectangle(75+i*22,130+(i*37)%100,4,6,[0xffc968,0xcda3ea,0x9fce90][i%3]);
+   this.tweens.add({targets:p,y:470,angle:360,duration:1800+(i%7)*200,delay:(i%9)*130,repeat:-1,onRepeat:()=>p.y=110});
+  }
+  text(this,480,469,'THANK YOU FOR BRINGING HALLOWEEN HOME',16,'#ffcf77');
+  this.time.delayedCall(7200,()=>{this.cameras.main.fadeOut(500);this.time.delayedCall(550,()=>this.scene.start('Credits',this.result));});
+ }
+}

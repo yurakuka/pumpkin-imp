@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { Celebration } from './game/celebration.js';
 import { Boot, Menu, End } from './scenes/Menu.js';
 import { Credits } from './scenes/Credits.js';
 import { Graveyard } from './scenes/Graveyard.js';
@@ -6,7 +7,7 @@ import { touch } from './game/touch.js';
 touch.init();
 // Keep the same vertical game scale and reveal more scenery on wide phones.
 const logicalWidth=()=>Math.max(960,Math.round(document.documentElement.clientWidth/document.documentElement.clientHeight*540));
-const game = new Phaser.Game({ type: Phaser.AUTO, parent: 'game', width: logicalWidth(), height: 540, backgroundColor: '#101021', pixelArt: true, roundPixels: true, scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH }, physics: { default: 'arcade', arcade: { gravity: { y: 1100 }, debug: false } }, scene: [Boot, Menu, Graveyard, End, Credits] });
+const game = new Phaser.Game({ type: Phaser.AUTO, parent: 'game', width: logicalWidth(), height: 540, backgroundColor: '#101021', pixelArt: true, roundPixels: true, scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH }, physics: { default: 'arcade', arcade: { gravity: { y: 1100 }, debug: false } }, scene: [Boot, Menu, Graveyard, End, Celebration, Credits] });
 if (import.meta.env.DEV) window.__game = game;
 function resize(){
  const width=logicalWidth();

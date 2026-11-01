@@ -2,11 +2,12 @@
 const CREDITS=[72,76,79,0,77,76,74,0,72,0,67,0,69,72,76,0,74,77,81,0,79,77,76,74,72,76,79,76,72,0,0,0];
 const MELODY=[69,0,72,71,69,0,64,0,68,0,71,74,72,71,68,0,69,0,76,74,72,0,71,0,68,71,72,68,64,0,0,0,69,0,72,76,75,74,72,0,71,0,74,77,76,74,71,0,72,0,76,79,77,76,74,72,71,68,64,68,69,0,0,0];
 class Sound {
- constructor(){this.muted=false;this.ctx=null;this.loop=null;this.step=0;this.notesPlayed=0;this.mode='adventure';}
+ constructor(){this.muted=false;this.ctx=null;this.loop=null;this.step=0;this.notesPlayed=0;this.mode='adventure';this.boost=false;}
  start(){if(!this.ctx){this.ctx=new(window.AudioContext||window.webkitAudioContext)();this.master=this.ctx.createGain();this.master.gain.value=this.muted?0:1;this.master.connect(this.ctx.destination);this.schedule();this.musicStep();}this.ctx.resume();}
  note(midi,duration,type,volume){if(!midi)return;this.tone(440*2**((midi-69)/12),duration,type,volume,false);this.notesPlayed++;}
  setMode(mode){if(this.mode===mode)return;this.mode=mode;this.step=0;if(this.ctx)this.schedule();}
- schedule(){clearInterval(this.loop);this.loop=setInterval(()=>this.musicStep(),this.mode==='boss'?112:this.mode==='credits'?235:185);}
+ setBoost(active){if(this.boost===active)return;this.boost=active;if(this.ctx)this.schedule();}
+ schedule(){clearInterval(this.loop);this.loop=setInterval(()=>this.musicStep(),(this.mode==='boss'?112:this.mode==='chase'?135:this.mode==='credits'?235:185)*(this.boost?.65:1));}
  musicStep(){
  if(!this.ctx||this.ctx.state!=='running')return;
  const n=this.step++%64;

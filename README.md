@@ -1,4 +1,4 @@
-# Pumpkin Imp: The Last Halloween — v1.2.0
+# Pumpkin Imp: The Last Halloween — v1.3.0
 
 Play: **https://yurakuka.github.io/pumpkin-imp/**
 
@@ -104,3 +104,13 @@ Rescued friends travel behind Pumpkin without collision or damage bodies. They h
 Companions keep a minimum 78-pixel separation in an ordered train (Larisa, then Duck), including catches, reversals and respawns. Fear lasts four seconds; Bone Rex's stun lasts 1.8 seconds. Bone Rex throws a slow, low bone every 2.2 seconds during combat. Jump over it or shoot it; projectiles can only damage Pumpkin and disappear on boss defeat.
 
 After the boss, use the low step and moving ferry to jump onto the upper lantern balcony. The final lantern cannot be reached from the ground. Activate it to open the homecoming door.
+
+## Version 1.3.0
+
+Friends travel close to Pumpkin in a fixed train (Larisa, then Duck), with their full sprites kept inside the camera and outside the left mobile buttons.
+
+At 11,800–14,300 pixels, a single hungry-fog chase starts; run to the far light to gain 10 seconds. The fog deals contact damage and resets behind the safe bank after a fall. Three tall chainsaw clowns appear at 4,850, 17,300 and 23,000 pixels: jump over them, scare them for four seconds, or defeat each with three fireballs. Their buzz is synthesized locally.
+
+Every 50 candies grants 10 seconds of Halloween Frenzy: double running speed (480 vs 240), a higher jump (740 vs 570 launch speed), faster music, invulnerability to enemy attacks and instant contact defeats of regular enemies, including clowns. Boss contact deals damage with the boss's normal hit cooldown. Falls still cost a heart. The boost timer freezes while paused or in a comic.
+
+Bone Rex enters phase two at four remaining HP: faster patrols/throws and a 650ms stomp warning followed by ground waves. Jump over the waves. The upper lantern and platforms stand apart from the tall glass-and-balcony LivUp building; the final door is its ground-floor entrance. After entering, the three friends dance amid confetti before credits and results.

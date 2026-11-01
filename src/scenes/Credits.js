@@ -30,6 +30,7 @@ export class Credits extends Phaser.Scene {
     const pages = [
       'STARRING\nPumpkin Imp • The Little Duck • Countess Larisa',
       'THE LAST HALLOWEEN\nOriginal pixel art & chiptune • Built with Phaser',
+      `YOUR HALLOWEEN\nFoes defeated: ${this.result.defeated||0} • Frenzies: ${this.result.powerups||0}\nFog escape: ${this.result.fog?'COMPLETE':'Not reached'}`,
       'SPECIAL THANKS TO YOU\nFor every leap, every rescue, and every little spark.\nTHANK YOU FOR PLAYING!',
     ];
     this.creditPage = 0;

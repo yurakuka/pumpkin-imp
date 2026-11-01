@@ -58,7 +58,12 @@ export class Rescues {
     // and the trailing actor can never cross the leader, even during catch-up.
     const followers=this.entries.filter(e=>e.following).sort((a,b)=>a.key==='larisa'?-1:b.key==='larisa'?1:0);
     const spacing=78;
-    const anchor=Math.max(130,Math.min(s.player.x-100,view.left+207));
+    // Keep the entire train beside Pumpkin and beyond the left touch buttons.
+    const canvas=s.game.canvas.getBoundingClientRect();
+    const rightButton=document.querySelector('[data-control="right"]')?.getBoundingClientRect();
+    const controlEdge=touch.enabled&&rightButton?(rightButton.right-canvas.left)*view.width/canvas.width+38:40;
+    const minimum=view.left+controlEdge+(followers.length-1)*spacing;
+    const anchor=Math.max(minimum,Math.min(s.player.x-65,view.right-100));
     const danger=s.enemies.getChildren().some(e=>e.active&&!e.banished&&s.time.now>=e.fear&&Math.abs(e.x-s.player.x)<210)
       ||(!s.boss.defeated&&Math.abs(s.boss.sprite.x-s.player.x)<500);
     let leader=null;
@@ -68,8 +73,11 @@ export class Rescues {
       const waiting=danger&&s.player.x>npc.x&&npc.x>=view.left+45;
       const dx=target-npc.x;
       if(Math.abs(dx)>1000){npc.x=target;entry.hop=0;}
-      else if(!waiting)npc.x+=Math.sign(dx)*Math.min(Math.abs(dx),330*Math.min(delta,100)/1000);
-      if(leader)npc.x=Math.min(npc.x,leader.x-spacing);
+      else if(!waiting)npc.x+=Math.sign(dx)*Math.min(Math.abs(dx),(s.boosted?650:400)*Math.min(delta,100)/1000);
+      // Constrain both ends on every frame, rather than waiting to catch up.
+      npc.x=Math.max(view.left+controlEdge+(followers.length-1-index)*spacing,Math.min(npc.x,view.right-42-index*spacing));
+      if(index===0&&Math.abs(npc.x-target)>155)npc.x=target;
+      if(leader)npc.x=leader.x-spacing;
       const move=npc.x-oldX;
       const gap=s.gaps.some(([a,b])=>npc.x>a-40&&npc.x<b+40);
       if(gap&&move!==0)entry.hop=(entry.hop||0)+delta/210;
