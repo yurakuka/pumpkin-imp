@@ -17,7 +17,11 @@ class ScreenActions {
         if (event.type === 'pointerdown') event.preventDefault();
         if (this.owner !== owner || this.busy) return;
         this.busy = true;
-        action.run();
+        try { action.run(); }
+        finally {
+          // Debounce pointerdown + click, then unlock actions that keep this scene open.
+          setTimeout(() => { if (this.owner === owner) this.busy = false; }, 300);
+        }
       };
       button.addEventListener('pointerdown', run);
       button.addEventListener('click', run);

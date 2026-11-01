@@ -56,7 +56,8 @@ export class Graveyard extends Phaser.Scene {
  const width=this.scale.gameSize.width,offset=(width-960)/2;
  this.cameras.main.setViewport(0,0,width,540);
  const phone=touch.enabled&&Math.min(screen.width,screen.height)<=540;
- const zoom=phone?1.12:1;
+ const compactPhone=phone&&Math.min(screen.width,screen.height)<=410;
+ const zoom=compactPhone?1.2:phone?1.12:1;
  if(!this.escaping)this.cameras.main.setZoom(zoom);
  const x=width/2-480/zoom,y=270-270/zoom;
  if(this.hud)this.hud.setPosition(x,y).setScale(1/zoom);
