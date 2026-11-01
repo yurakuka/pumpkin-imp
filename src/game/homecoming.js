@@ -41,7 +41,7 @@ export class Homecoming {
     this.started=true;s.escaping=true;
     s.hud.setVisible(false);s.hint.setVisible(false);s.notice.setVisible(false);
     touch.clear();touch.deactivate();
-    sound.setBoost(false);
+    sound.setBoost(false);s.giant.setVisible(false);s.player.setAlpha(1);
     s.cameras.main.setBounds(0,-750,28200,1290);
     s.time.delayedCall(4000,()=>{
       s.cameras.main.stopFollow();s.cameras.main.zoomTo(.45,1800);s.cameras.main.pan(27600,-60,1800);

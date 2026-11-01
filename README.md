@@ -1,4 +1,4 @@
-# Pumpkin Imp: The Last Halloween — v1.3.0
+# Pumpkin Imp: The Last Halloween — v1.4.0
 
 Play: **https://yurakuka.github.io/pumpkin-imp/**
 
@@ -27,7 +27,7 @@ The play server prints the desktop address (port 5173) and LAN addresses (port 5
 - A/D or Left/Right: move
 - Space: jump; hold for a high jump
 - J: fireballs
-- K: scare within 450 pixels; 8-second cooldown
+- K: scare all visible enemies; 8-second cooldown
 - Escape: pause/resume
 - M: mute/unmute
 
@@ -35,7 +35,7 @@ On phones, turn sideways and use the touch buttons. SCARE is above FIRE (left) a
 
 There are 15 pits, five hearts and 210 seconds until dawn. Every 15 candies restores a heart. Falling costs a heart and returns you to the latest safe bank near the pit. Descending head stomps defeat ground wardens and floating ghosts. Lanterns light as you pass; checkpoint lanterns refill health.
 
-Defeat or scare each friend's three captors to rescue them. Comics pause physics and the countdown; on mobile, use the native TAP TO CONTINUE button below the picture. Rescue progress survives falls. Bone Rex guards the final lantern: eight fireball hits or head stomps defeat it; scare stuns it. Winning opens the friends' reunion and credits.
+Defeat or scare each friend's three captors to rescue them. Comics pause physics and the countdown; on mobile, use the native TAP TO CONTINUE button below the picture. Rescue progress survives falls. Bone Rex guards the final lantern: ten fireball hits or head stomps defeat it; scare stuns it. Winning opens the friends' reunion and credits.
 
 ## Publish changes from the console
 
@@ -114,3 +114,11 @@ At 11,800–14,300 pixels, a single hungry-fog chase starts; run to the far ligh
 Every 50 candies grants 10 seconds of Halloween Frenzy: double running speed (480 vs 240), a higher jump (740 vs 570 launch speed), faster music, invulnerability to enemy attacks and instant contact defeats of regular enemies, including clowns. Boss contact deals damage with the boss's normal hit cooldown. Falls still cost a heart. The boost timer freezes while paused or in a comic.
 
 Bone Rex enters phase two at four remaining HP: faster patrols/throws and a 650ms stomp warning followed by ground waves. Jump over the waves. The upper lantern and platforms stand apart from the tall glass-and-balcony LivUp building; the final door is its ground-floor entrance. After entering, the three friends dance amid confetti before credits and results.
+
+## Version 1.4.0 (current behavior; supersedes older release notes)
+
+Clowns walk at 90px/s, laugh in four rough synthesized syllables, take five hits, and calculate a ballistic leap to the opposite bank of a pit. Fear temporarily makes them retreat at 130px/s. Friends use a damped train in camera coordinates without per-frame clamps or catch-up teleports. Warden arms/legs now have eight small pixel animation steps instead of two abrupt poses.
+
+Every 50 candies now grants Giant Imp for eight seconds: the visible hero is three times normal size, immune to enemy attacks and defeats regular enemies on contact. Movement stays at 240px/s, jump launch speed stays at 570px/s, and music tempo is unchanged. A compact physics body keeps the temporary visual growth from trapping the player under platforms; the giant visual bounds determine contact attacks. Falls still cost a heart.
+
+Bone Rex has ten HP, phase two begins at five HP, and bone intervals are 1.7s / 1.25s (first throw after 1.3s). Bone speed and stomp warning remain unchanged. Only coarse-pointer phones with a screen short side <=540 CSS pixels receive a 1.12 camera zoom; tablets and desktop retain 1.0. HUD/comics/pause UI compensate for zoom.

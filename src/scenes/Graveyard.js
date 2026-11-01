@@ -22,7 +22,8 @@ export class Graveyard extends Phaser.Scene {
  const ledges=[];for(let i=0;i<51;i++){let x=480+i*515,y=i%3===0?330:365;const w=150+(i%2)*50;if(x>=25600)continue;if([7600,15900].some(n=>x+w>n-240&&x<n+240))continue;if(gaps.some(([a,b])=>x+w>a-240&&x<b+100))continue;this.platform(x,y,w,20);ledges.push([x,y]);}
  // Pits have clear approach paths for predictable running jumps.
  this.candies=this.physics.add.staticGroup();for(let x=260;x<WIDTH-300;x+=155){if(!gaps.some(([a,b])=>x>a-10&&x<b+10))this.candies.create(x,430,'candy');}for(const [x,y]of ledges)for(let j=0;j<3;j++)this.candies.create(x+25+j*45,y-30,'candy');
- this.player=this.physics.add.sprite(100,390,'imp-idle-0').setScale(1.25);this.player.setSize(29,34).setOffset(10,10).setCollideWorldBounds(true);this.player.body.setMaxVelocity(520,950);this.physics.add.collider(this.player,this.platforms);
+ this.player=this.physics.add.sprite(100,390,'imp-idle-0').setScale(1.25);this.player.setSize(29,34).setOffset(10,10).setCollideWorldBounds(true);this.player.body.setMaxVelocity(300,800);this.physics.add.collider(this.player,this.platforms);
+ this.giant=this.add.sprite(100,440,'imp-idle-0').setOrigin(.5,.94).setScale(3.75).setDepth(14).setVisible(false);
  this.enemies=this.physics.add.group();for(let i=0;i<61;i++){let x=650+i*425;if(gaps.some(([a,b])=>x>a-60&&x<b+60))x+=160;if(x>25500||[7600,15900].some(n=>Math.abs(n-x)<400))continue;const e=this.enemies.create(x,420,'warden0').play('warden');e.setSize(25,43).setOffset(8,4);e.kind='warden';e.home=x;e.dir=i%2?1:-1;e.fear=0;}
  for(let i=0;i<41;i++){const x=1050+i*620;if(x>25500||[7600,15900].some(n=>Math.abs(n-x)<400))continue;const e=this.enemies.create(x,235+(i%3)*45,'ghost0').play('ghost');e.setSize(28,50).setOffset(10,5);e.body.setAllowGravity(false);e.kind='ghost';e.home=e.x;e.baseY=e.y;e.dir=-1;e.fear=0;}
  this.physics.add.collider(this.enemies,this.platforms);this.physics.add.overlap(this.player,this.enemies,(_,e)=>this.contactEnemy(e));
@@ -53,12 +54,16 @@ export class Graveyard extends Phaser.Scene {
  layout(){
  const width=this.scale.gameSize.width,offset=(width-960)/2;
  this.cameras.main.setViewport(0,0,width,540);
- if(this.hud)this.hud.x=offset;
- if(this.hint)this.hint.x=width/2;
- if(this.notice)this.notice.x=width/2;
- if(this.boss)this.boss.panel.x=offset;
- if(this.pauseUI)this.pauseUI.x=offset;
- if(this.rescues?.activeComic)this.rescues.activeComic.x=offset;
+ const phone=touch.enabled&&Math.min(screen.width,screen.height)<=540;
+ const zoom=phone?1.12:1;
+ if(!this.escaping)this.cameras.main.setZoom(zoom);
+ const x=width/2-480/zoom,y=270-270/zoom;
+ if(this.hud)this.hud.setPosition(x,y).setScale(1/zoom);
+ if(this.hint)this.hint.setPosition(width/2,270+240/zoom).setScale(1/zoom);
+ if(this.notice)this.notice.setPosition(width/2,270-175/zoom).setScale(1/zoom);
+ if(this.boss)this.boss.panel.setPosition(x,y).setScale(1/zoom);
+ if(this.pauseUI)this.pauseUI.setPosition(x,y).setScale(1/zoom);
+ if(this.rescues?.activeComic)this.rescues.activeComic.setPosition(x,y).setScale(1/zoom);
  }
  activateCheckpoint(c){
  if(c.index<=this.checkpointIndex)return;
@@ -78,7 +83,7 @@ export class Graveyard extends Phaser.Scene {
  collectCandy(){
  this.candy++;sound.tone(720,.07,'sine',.03);
  if(this.candy%15===0)this.hp=Math.min(MAX_HEALTH,this.hp+1);
- if(this.candy%50===0){this.boostRemaining=10000;this.powerups++;sound.setBoost(true);this.toast('HALLOWEEN FRENZY • 10 seconds! Run, leap, touch to defeat!');}
+ if(this.candy%50===0){this.boostRemaining=8000;this.powerups++;this.toast('GIANT IMP • 8 seconds of invincibility!');}
  }
  defeatEnemy(e){
  if(!e.active)return;
@@ -133,6 +138,7 @@ export class Graveyard extends Phaser.Scene {
  touch.clear();this.paused=!this.paused;touch.mode(this.paused?'paused':'play');
  if(this.paused){
  this.physics.world.pause();this.pauseUI=this.add.container((this.scale.gameSize.width-960)/2,0).setDepth(200).setScrollFactor(0);
+ this.layout();
  this.pauseUI.add(this.add.rectangle(480,270,960,540,0x080d1c,.9));
  this.pauseUI.add(text(this,480,165,'THE NIGHT HOLDS ITS BREATH',28,'#ffc87c').setScrollFactor(0));
  this.pauseUI.add(text(this,480,245,'PAUSED\nTake a breath. Your adventure will wait.',18).setScrollFactor(0));
@@ -140,14 +146,14 @@ export class Graveyard extends Phaser.Scene {
  }else{screenActions.hide();this.physics.world.resume();this.pauseUI.destroy(true);}
  }
  update(_,delta){if(!this.keys||this.finished)return;if(this.escaping)return;const k=this.keys;if(Phaser.Input.Keyboard.JustDown(k.mute)||touch.take('mute'))this.mute();if(this.inComic){this.rescues.comicInput();return;}if(Phaser.Input.Keyboard.JustDown(k.pause)||touch.take('pause'))this.pause();if(touch.blocked&&!this.paused)this.pause();if(this.paused)return;
- this.boostRemaining=Math.max(0,this.boostRemaining-delta);sound.setBoost(this.boosted);
+ this.boostRemaining=Math.max(0,this.boostRemaining-delta);sound.setBoost(false);
  sound.setMode(this.boss.introduced&&!this.boss.defeated?'boss':this.fog.active?'chase':'adventure');
  this.remaining-=delta/1000;this.elapsed+=delta;if(this.remaining<=0){this.finish(false);return;}
  this.hearts.setText('♥'.repeat(this.hp)+'♡'.repeat(MAX_HEALTH-this.hp));this.counter.setText(`CANDY ${String(this.candy).padStart(3,'0')}  FRIENDS ${this.rescues.completed}/2`);this.clock.setText(`DAWN IN ${Math.floor(this.remaining/60)}:${String(Math.floor(this.remaining%60)).padStart(2,'0')}`);
  if(this.dead)return;const p=this.player,now=this.time.now,onGround=p.body.blocked.down;this.rememberSafeGround();this.lastGround=onGround?now:(this.lastGround||0);if(Phaser.Input.Keyboard.JustDown(k.jump)||touch.take('jump'))this.jumpBuffer=now+120;
- if(now<this.hurtUntil-1250){}else{const dir=(k.right.isDown||k.d.isDown||touch.held('right')?1:0)-(k.left.isDown||k.a.isDown||touch.held('left')?1:0);p.setVelocityX(dir*(this.boosted?480:240));if(dir)this.facing=dir;}
+ if(now<this.hurtUntil-1250){}else{const dir=(k.right.isDown||k.d.isDown||touch.held('right')?1:0)-(k.left.isDown||k.a.isDown||touch.held('left')?1:0);p.setVelocityX(dir*240);if(dir)this.facing=dir;}
  // Preserve the asymmetric face while reversing only the direction of movement.
- if(this.jumpBuffer>now&&now-this.lastGround<100){p.setVelocityY(this.boosted?-740:-570);this.jumpStartedAt=now;this.gasEmitted=false;this.jumpBuffer=0;this.lastGround=-1000;sound.tone(330,.13);}
+ if(this.jumpBuffer>now&&now-this.lastGround<100){p.setVelocityY(-570);this.jumpStartedAt=now;this.gasEmitted=false;this.jumpBuffer=0;this.lastGround=-1000;sound.tone(330,.13);}
  if((Phaser.Input.Keyboard.JustUp(k.jump)||touch.takeRelease('jump'))&&p.body.velocity.y<-180)p.setVelocityY(-180);
  if(!this.gasEmitted&&!onGround&&(k.jump.isDown||touch.held('jump'))&&now-this.jumpStartedAt>=140&&now-this.jumpStartedAt<450&&p.body.velocity.y<-180){this.gasEmitted=true;this.jumpGas();}
  const firePressed=touch.take('fire');
@@ -159,7 +165,15 @@ export class Graveyard extends Phaser.Scene {
  const anim=now<this.hurtUntil-1100?'hit':now<this.attackUntil?'attack':!onGround?'jump':Math.abs(p.body.velocity.x)>10?'run':'idle';p.play(anim,true);p.setAlpha(now<this.hurtUntil?(Math.floor(now/90)%2?.45:1):1);
  this.hint.setText(now<this.scareAt?`J Fire   K Scare: ${((this.scareAt-now)/1000).toFixed(1)}s   •   ESC Pause`:'A/D Move   SPACE Jump   J Fire   K Scare READY   ESC Pause');
  if(touch.enabled)this.hint.setText(now<this.scareAt?`SCARE recharges in ${((this.scareAt-now)/1000).toFixed(1)}s`:'Hold FIRE to shoot • Hold JUMP for a higher leap');
- if(this.boosted){p.setTint([0xffdc75,0xbce897,0xdda5ff][Math.floor(now/100)%3]);this.hint.setText(`HALLOWEEN FRENZY  ${(this.boostRemaining/1000).toFixed(1)}s`);}else p.clearTint();
+ this.giant.setVisible(this.boosted);
+ if(this.boosted){
+  p.setAlpha(0);this.giant.setPosition(p.x,p.body.bottom).setTexture(p.texture.key);
+  this.giant.setAlpha(this.boostRemaining<1200?.65+Math.sin(now/90)*.2:1);
+  const bounds=this.giant.getBounds();
+  for(const e of [...this.enemies.getChildren()])if(e.active&&Phaser.Geom.Intersects.RectangleToRectangle(bounds,e.getBounds()))this.defeatEnemy(e);
+  if(!this.boss.defeated&&Phaser.Geom.Intersects.RectangleToRectangle(bounds,this.boss.sprite.getBounds()))this.boss.hit();
+  this.hint.setText(`GIANT IMP  ${(this.boostRemaining/1000).toFixed(1)}s`);
+ }
  this.fog.update(delta);
  this.climb.update();
  this.pathLights.update();

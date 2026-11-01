@@ -54,38 +54,27 @@ export class Rescues {
     const s=this.scene;
     if(s.inComic||s.escaping||s.dead)return;
     const view=s.cameras.main.worldView;
-    // One ordered train: Larisa leads, Duck follows. Both use the same anchor
-    // and the trailing actor can never cross the leader, even during catch-up.
     const followers=this.entries.filter(e=>e.following).sort((a,b)=>a.key==='larisa'?-1:b.key==='larisa'?1:0);
-    const spacing=78;
-    // Keep the entire train beside Pumpkin and beyond the left touch buttons.
-    const canvas=s.game.canvas.getBoundingClientRect();
-    const rightButton=document.querySelector('[data-control="right"]')?.getBoundingClientRect();
-    const controlEdge=touch.enabled&&rightButton?(rightButton.right-canvas.left)*view.width/canvas.width+38:40;
-    const minimum=view.left+controlEdge+(followers.length-1)*spacing;
-    const anchor=Math.max(minimum,Math.min(s.player.x-65,view.right-100));
-    const danger=s.enemies.getChildren().some(e=>e.active&&!e.banished&&s.time.now>=e.fear&&Math.abs(e.x-s.player.x)<210)
-      ||(!s.boss.defeated&&Math.abs(s.boss.sprite.x-s.player.x)<500);
-    let leader=null;
-    for(const [index,entry] of followers.entries()){
+    if(!followers.length)return;
+    const spacing=78,canvas=s.game.canvas.getBoundingClientRect();
+    const button=document.querySelector('[data-control="right"]')?.getBoundingClientRect();
+    const edge=touch.enabled&&button?(button.right-canvas.left)*view.width/canvas.width+38:40;
+    const minimum=edge+(followers.length-1)*spacing;
+    const target=Math.max(minimum,Math.min(s.player.x-view.left-70,view.width-80));
+    // Follow in camera coordinates: a moving camera cannot clamp/teleport actors.
+    // Exponential damping is independent of frame rate; the train stays rigid.
+    this.trainScreenX??=target;
+    this.trainScreenX+=(target-this.trainScreenX)*(1-Math.exp(-Math.min(delta,80)/110));
+    for(const [index,entry]of followers.entries()){
       const npc=entry.npc,oldX=npc.x;
-      const target=anchor-index*spacing;
-      const waiting=danger&&s.player.x>npc.x&&npc.x>=view.left+45;
-      const dx=target-npc.x;
-      if(Math.abs(dx)>1000){npc.x=target;entry.hop=0;}
-      else if(!waiting)npc.x+=Math.sign(dx)*Math.min(Math.abs(dx),(s.boosted?650:400)*Math.min(delta,100)/1000);
-      // Constrain both ends on every frame, rather than waiting to catch up.
-      npc.x=Math.max(view.left+controlEdge+(followers.length-1-index)*spacing,Math.min(npc.x,view.right-42-index*spacing));
-      if(index===0&&Math.abs(npc.x-target)>155)npc.x=target;
-      if(leader)npc.x=leader.x-spacing;
-      const move=npc.x-oldX;
-      const gap=s.gaps.some(([a,b])=>npc.x>a-40&&npc.x<b+40);
-      if(gap&&move!==0)entry.hop=(entry.hop||0)+delta/210;
-      else entry.hop=0;
-      npc.y=472-(gap?38+Math.abs(Math.sin(entry.hop))*48:move?Math.abs(Math.sin(s.time.now/90+index))*6:0);
-      npc.setRotation(move?Math.sin(s.time.now/110+index)*.045:0);
-      npc.setFlipX(move<0);
-      leader=npc;
+      npc.x=view.left+this.trainScreenX-index*spacing;
+      const walking=Math.abs(npc.x-oldX)>.1;
+      const gap=s.gaps.find(([a,b])=>npc.x>a-35&&npc.x<b+35);
+      const hop=gap?Math.sin(Math.PI*(npc.x-gap[0]+35)/(gap[1]-gap[0]+70))*75:0;
+      const targetY=472-Math.max(0,hop)-(walking?Math.sin(s.time.now/120+index)*2:0);
+      npc.y+=(targetY-npc.y)*(1-Math.exp(-delta/70));
+      npc.setRotation(walking?Math.sin(s.time.now/170+index)*.018:0);
+      if(Math.abs(npc.x-oldX)>.5)npc.setFlipX(npc.x<oldX);
     }
   }
 
@@ -124,6 +113,7 @@ export class Rescues {
     words(480, 502, touch.enabled?'Tap CONTINUE to travel together':'CONTINUE  •  ENTER / SPACE', 17, '#fff0cc');
     this.activeEntry = entry;
     this.activeComic = ui;
+    s.layout();
     // Do not allow a held jump/attack to immediately skip the comic.
     this.readyAt = performance.now() + 450;
     this.released = false;
